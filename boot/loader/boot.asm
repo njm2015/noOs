@@ -40,3 +40,9 @@ align 16
         stack_bottom:
         resb 16384          ; 16 KB stack.
         stack_top:
+
+global cursor_pos
+cursor_pos: dw 0
+
+global fb
+fb: dw 0

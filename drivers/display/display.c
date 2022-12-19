@@ -1,24 +1,4 @@
-#include <stdbool.h>
-#include <stddef.h>
-#include <stdint.h>
-
-#include "multiboot.h"
-//#include "jetbrains_mono.h"
-#include "ibm.h"
-//#include "font.h"
-
-#define WIDTH 640
-#define HEIGHT 400
-#define CHAR_WIDTH 8
-#define CHAR_HEIGHT 16
-
-#define COLOR_WHITE 0x00ffffff
-#define COLOR_RED 0x00ff0000
-#define COLOR_GREEN 0x0000ff00
-#define COLOR_BLUE 0x000000ff
-
-size_t cursor_pos;     // (j * WIDTH) + i
-uint32_t* fb;
+#include "display.h"
 
 void put_pixel(size_t x, size_t y, uint32_t color) {
 
@@ -62,14 +42,3 @@ void puts(char* s) {
 
 }
 
-void kernel_main(uint32_t magic_number, uint32_t mb_addr) {
-
-    if (magic_number != MULTIBOOT_BOOTLOADER_MAGIC)
-        return;
-
-    multiboot_info_t* mbi = (multiboot_info_t*) mb_addr;
-    fb = (uint32_t*) mbi->framebuffer_addr;
-
-    puts("ABCDEFG");
-
-}
