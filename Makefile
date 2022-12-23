@@ -19,16 +19,17 @@ DRIVER_SOURCES_ASM := $(foreach d, $(DRIVER_COMPONENTS), $(wildcard $d/*.asm))
 DRIVER_OBJS := $(DRIVER_SOURCES_ASM:%.asm=%.o) $(DRIVER_SOURCES_C:%.c=%.o)
 
 
-KERNEL_INCLUDE = $(foreach d, $(KERNEL_COMPONENTS), -I$(subst ,,$d))
-DRIVER_INCLUDE = $(foreach d, $(DRIVER_COMPONENTS), -I$(subst ,,$d))
-BOOT_INCLUDE = $(foreach d, $(BOOT_COMPONENTS), -I$(subst ,,$d))
+KERNEL_INCLUDE_GCC = $(foreach d, $(KERNEL_COMPONENTS), -I$(subst ,,$d))
+DRIVER_INCLUDE_GCC = $(foreach d, $(DRIVER_COMPONENTS), -I$(subst ,,$d))
+BOOT_INCLUDE_GCC = $(foreach d, $(BOOT_COMPONENTS), -I$(subst ,,$d))
 
+KERNEL_INCLUDE_NASM = $(foreach d, $(KERNEL_COMPONENTS), -i$(subst ,,$d))
+DRIVER_INCLUDE_NASM = $(foreach d, $(DRIVER_COMPONENTS), -i$(subst ,,$d))
+BOOT_INCLUDE_NASM = $(foreach d, $(BOOT_COMPONENTS), -i$(subst ,,$d))
 
-$(info $(KERNEL_INCLUDE))
-$(info $(BOOT_INCLUDE))
-$(info $(DRIVER_INCLUDE))
+INCLUDE_GCC = $(BOOT_INCLUDE_GCC) $(KERNEL_INCLUDE_GCC) $(DRIVER_INCLUDE_GCC)
+INCLUDE_NASM = $(BOOT_INCLUDE_NASM) $(KERNEL_INCLUDE_NASM) $(DRIVER_INCLUDE_NASM)
 
-INCLUDE = $(BOOT_INCLUDE) $(KERNEL_INCLUDE) $(DRIVER_INCLUDE)
 CFLAGS = -c -g -ggdb -std=gnu99 -ffreestanding -Wall -Wextra $(INCLUDE)
 
 all: grub/noOs.iso
@@ -59,7 +60,7 @@ grub/noOs.bin: linker.ld $(BOOT_OBJS) $(KERNEL_OBJS) $(DRIVER_OBJS)
 	i686-elf-gcc $(CFLAGS) $< -o $@ 
 
 %.o: %.asm
-	nasm -g -F dwarf -felf32 $< -o $@
+	nasm $(INCLUDE_NASM) -g -F dwarf -felf32 $< -o $@
 
 clean:
 	rm -f $(BOOT_OBJS)

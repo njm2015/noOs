@@ -15,6 +15,10 @@ void kernel_main(uint32_t magic_number, uint32_t mb_addr) {
     multiboot_info_t* mbi = (multiboot_info_t*) mb_addr;
     fb = (uint32_t*) mbi->framebuffer_addr;
 
-    puts("ABCDEFG");
+    type("hello\n");
+    type("my\n");
+    type("name\n");
+    type("is\n");
+    type("nathaniel\n");
 
 }
