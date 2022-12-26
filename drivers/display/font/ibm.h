@@ -3,6 +3,9 @@
  * MxPlus_IBM_VGA_9x16.ttf 16 px Font in U+0020 ( ) .. U+007e (~)  range with 1 bpp
 ***********************************************************************************/
 
+#ifndef IBM_H
+#define IBM_H
+
 /*Store the image of the letters (glyph)*/
 static const uint8_t font_map[] = 
 {
@@ -2388,3 +2391,6 @@ static const uint8_t font_map[] =
 
 
 };
+
+#endif
+

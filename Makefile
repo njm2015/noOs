@@ -30,13 +30,13 @@ BOOT_INCLUDE_NASM = $(foreach d, $(BOOT_COMPONENTS), -i$(subst ,,$d))
 INCLUDE_GCC = $(BOOT_INCLUDE_GCC) $(KERNEL_INCLUDE_GCC) $(DRIVER_INCLUDE_GCC)
 INCLUDE_NASM = $(BOOT_INCLUDE_NASM) $(KERNEL_INCLUDE_NASM) $(DRIVER_INCLUDE_NASM)
 
-CFLAGS = -c -g -ggdb -std=gnu99 -ffreestanding -Wall -Wextra $(INCLUDE)
+CFLAGS = -c -g -ggdb -std=gnu99 -ffreestanding -Wall -Wextra $(INCLUDE_GCC)
 
 all: grub/noOs.iso
 
 .PHONY: run
 run:
-	qemu-system-i386 -cdrom grub/noOs.iso
+	qemu-system-i386 -d int -cdrom grub/noOs.iso
 
 .PHONY: rund
 rund:
@@ -46,7 +46,13 @@ rund:
 run64:
 	qemu-system-x86_64 -bios /usr/share/ovmf/OVMF.fd -cdrom grub/noOs.iso
 
-grub/noOs.iso: grub/noOs.bin grub/grub.cfg
+.PHONY: usb
+usb:
+	bash -c "sudo dd if=/dev/zero of=/dev/sda bs=512 count=245760"
+	bash -c "sudo mkfs.vfat -F 32 -n NOOS -I /dev/sda"
+	bash -c "sudo dd bs=4M if=grub/noOs.iso of=/dev/sda conv=fdatasync"
+
+grub/noOs.iso: clean grub/noOs.bin grub/grub.cfg
 	bash -c "mkdir -p grub/build/boot"
 	bash -c "mkdir -p grub/build/boot/grub"
 	bash -c "cp grub/noOs.bin grub/build/boot"
