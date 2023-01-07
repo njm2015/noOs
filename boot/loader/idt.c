@@ -9,6 +9,7 @@ void init_idt() {
 
         interrupt_descriptor_32_t d = { .selector = 0x8, .zero = 0, .type_attributes = 0x8e };
         void (**temp_ptr)() = &default_isr;
+        //void (**temp_ptr)() = (i == 7 || i == 15) ? &spurious_isr : &default_isr;
         d.offset1 = (uint16_t) temp_ptr;
         d.offset2 = (uint16_t) (((uint32_t) temp_ptr) >> 16);
         interrupts[i] = d;
@@ -28,11 +29,14 @@ void set_idt_entry(uint8_t index, uint32_t callback) {
 
 void handle_interrupt(uint8_t i) {
 
-    outb(0x20, 0x20);
     if (i > 7)
         outb(0xa0, 0x20);
 
+    outb(0x20, 0x20);
+
 }
+
+void  spurious_isr() {}
 
 void default_isr() {
 

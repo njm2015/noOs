@@ -9,10 +9,12 @@
 #ifndef KEYBOARD_H
 #define KEYBOARD_H
 
-#define SCANCODE_PORT 0x60
+#define KEYBOARD_SCANCODE_PORT 0x60
 
 void init_keyboard();
 void keyboard_isr();
+
+void temp_keyboard_isr();
 
 static const char keymap[] = {
     0x0,    /* no value */

@@ -7,9 +7,10 @@
 #define IDT_H
 
 #define INTERRUPT_START asm volatile("pushal");
-#define INTERRUPT_END asm volatile("popal"); \
-                      asm volatile("leave");    /* pop so we can use C calling convention */ \
-                      asm volatile("iret");
+
+#define INTERRUPT_END   asm volatile("popal"); \
+                        asm volatile("leave");    /* pop so we can use C calling convention */ \
+                        asm volatile("iret");
 
 typedef struct interrupt_descriptor_32_t {
     uint16_t offset1;
@@ -30,6 +31,7 @@ extern idt_t idt_addr;
 void init_idt();
 void set_idt_entry(uint8_t index, uint32_t callback);
 void handle_interrupt(uint8_t i);
+void spurious_isr();
 void default_isr();
 
 #endif

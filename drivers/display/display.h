@@ -9,8 +9,8 @@
 
 // TODO bring this config into a 
 // global display context
-#define WIDTH 640
-#define HEIGHT 400
+#define WIDTH 1920
+#define HEIGHT 1080
 #define CHAR_WIDTH 8
 #define CHAR_HEIGHT 16
 #define CURSOR_HEIGHT 3

@@ -41,11 +41,11 @@ void putc_color(unsigned char c, uint32_t color) {
     if (cursor_pos >= WIDTH * HEIGHT)
         scroll();
 
-    for (size_t i = 0; i < CHAR_HEIGHT; ++i) {        // bitmap row
-        for (size_t j = 0; j < CHAR_WIDTH; ++j) {     // bitmap column
+    for (size_t vert_idx = 0; vert_idx < CHAR_HEIGHT; ++vert_idx) {        // bitmap row
+        for (size_t horiz_idx = 0; horiz_idx < CHAR_WIDTH; ++horiz_idx) {     // bitmap column
 
-            if (font_map[c * CHAR_HEIGHT + i] & (1 << (CHAR_WIDTH-j)))
-                put_pixel_in_cursor_block(j, i, color);
+            if (font_map[c * CHAR_HEIGHT + vert_idx] & (1 << (CHAR_WIDTH - horiz_idx)))
+                put_pixel_in_cursor_block(horiz_idx, vert_idx, color);
 
         }
     }
@@ -85,9 +85,9 @@ void types(char* s) {
 
 void color_cursor(uint32_t color) {
 
-    for (size_t i = CHAR_HEIGHT; i > CHAR_HEIGHT - CURSOR_HEIGHT; --i)
-        for (size_t j = 0; j < CHAR_WIDTH; ++j)
-            put_pixel_in_cursor_block(j, i, color);
+    for (size_t vert_idx = CHAR_HEIGHT; vert_idx > CHAR_HEIGHT - CURSOR_HEIGHT; --vert_idx)
+        for (size_t horiz_idx = 0; horiz_idx < CHAR_WIDTH; ++horiz_idx)
+            put_pixel_in_cursor_block(horiz_idx, vert_idx, color);
 
 }
 
@@ -97,20 +97,18 @@ void inc_cursor() { cursor_pos += CHAR_WIDTH; }
 
 void scroll() {
 
-    for (size_t i = CHAR_HEIGHT; i < HEIGHT; ++i) {
-        for (size_t j = 0; j < WIDTH; ++j) {
-            copy_pixel(j, i, j, i-CHAR_HEIGHT);
+    for (size_t vert_idx = CHAR_HEIGHT; vert_idx < HEIGHT; ++vert_idx) {
+        for (size_t horiz_idx = 0; horiz_idx < WIDTH; ++horiz_idx) {
+            copy_pixel(horiz_idx, vert_idx, horiz_idx, vert_idx-CHAR_HEIGHT);
         }
     }
 
-    for (size_t i = (HEIGHT-CHAR_HEIGHT); i < HEIGHT; ++i) {
-        for (size_t j = 0; j < WIDTH; ++j) {
-            put_pixel(j, i, COLOR_BLACK);
+    for (size_t vert_idx = (HEIGHT-CHAR_HEIGHT); vert_idx < HEIGHT; ++vert_idx) {
+        for (size_t horiz_idx = 0; horiz_idx < WIDTH; ++horiz_idx) {
+            put_pixel(horiz_idx, vert_idx, COLOR_BLACK);
         }
     }
 
-    //undraw_cursor();
     cursor_pos -= (WIDTH * CHAR_HEIGHT);
-    //draw_cursor();
 
 }

@@ -13,8 +13,8 @@ align 4
     dd CHECKSUM
     dd 0,0,0,0,0
     dd 0
-    dd 640
-    dd 400
+    dd 1920
+    dd 1080
     dd 32
 
 section .text

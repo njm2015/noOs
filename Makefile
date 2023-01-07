@@ -18,6 +18,10 @@ DRIVER_SOURCES_C := $(foreach d, $(DRIVER_COMPONENTS), $(wildcard $d/*.c))
 DRIVER_SOURCES_ASM := $(foreach d, $(DRIVER_COMPONENTS), $(wildcard $d/*.asm))
 DRIVER_OBJS := $(DRIVER_SOURCES_ASM:%.asm=%.o) $(DRIVER_SOURCES_C:%.c=%.o)
 
+ALL_OBJS := $(KERNEL_OBJS) $(BOOT_OBJS) $(DRIVER_OBJS)
+SERIAL_OBJS := $(foreach obj, $(ALL_OBJS), $(obj).serial)
+
+$(info $(SERIAL_OBJS))
 
 KERNEL_INCLUDE_GCC = $(foreach d, $(KERNEL_COMPONENTS), -I$(subst ,,$d))
 DRIVER_INCLUDE_GCC = $(foreach d, $(DRIVER_COMPONENTS), -I$(subst ,,$d))
@@ -31,8 +35,11 @@ INCLUDE_GCC = $(BOOT_INCLUDE_GCC) $(KERNEL_INCLUDE_GCC) $(DRIVER_INCLUDE_GCC)
 INCLUDE_NASM = $(BOOT_INCLUDE_NASM) $(KERNEL_INCLUDE_NASM) $(DRIVER_INCLUDE_NASM)
 
 CFLAGS = -c -g -ggdb -std=gnu99 -ffreestanding -Wall -Wextra $(INCLUDE_GCC)
+SERIAL=-DSERIAL
 
-all: grub/noOs.iso
+all: clean grub/noOs.iso grub/noOs-serial.iso
+
+.PRECIOUS: grub/noOs.bin grub/noOs-serial.bin
 
 .PHONY: run
 run:
@@ -49,28 +56,40 @@ run64:
 .PHONY: usb
 usb:
 	bash -c "sudo dd if=/dev/zero of=/dev/sda bs=512 count=245760"
+	bash -c "read -p \"Reinsert USB Drive. Then press any key to continue... \" -n1 -s"
+	bash -c "sleep 2"
 	bash -c "sudo mkfs.vfat -F 32 -n NOOS -I /dev/sda"
 	bash -c "sudo dd bs=4M if=grub/noOs.iso of=/dev/sda conv=fdatasync"
 
-grub/noOs.iso: clean grub/noOs.bin grub/grub.cfg
-	bash -c "mkdir -p grub/build/boot"
-	bash -c "mkdir -p grub/build/boot/grub"
-	bash -c "cp grub/noOs.bin grub/build/boot"
-	bash -c "cp grub/grub.cfg grub/build/boot/grub/grub.cfg"
-	bash -c "grub-mkrescue -o $@ grub/build"
-
-grub/noOs.bin: linker.ld $(BOOT_OBJS) $(KERNEL_OBJS) $(DRIVER_OBJS)
-	i686-elf-gcc -T $< -o $@ -g -ggdb -ffreestanding -nostdlib $(BOOT_OBJS) $(KERNEL_OBJS) $(DRIVER_OBJS) -lgcc 
-
-%.o: %.c
-	i686-elf-gcc $(CFLAGS) $< -o $@ 
-
-%.o: %.asm
-	nasm $(INCLUDE_NASM) -g -F dwarf -felf32 $< -o $@
-
+.PHONY: clean
 clean:
 	rm -f $(BOOT_OBJS)
 	rm -f $(KERNEL_OBJS)
 	rm -f $(DRIVER_OBJS)
 	rm -f grub/noOs.bin
 	rm -f grub/noOs.iso
+
+%.iso: %.bin grub/grub.cfg
+	bash -c "mkdir -p grub/build/boot"
+	bash -c "mkdir -p grub/build/boot/grub"
+	bash -c "cp $< grub/build/boot"
+	bash -c "cp grub/grub.cfg grub/build/boot/grub/grub.cfg"
+	bash -c "grub-mkrescue -o $@ grub/build"
+
+grub/noOs.bin: linker.ld $(ALL_OBJS) 
+	i686-elf-gcc -T $< -o $@ -g -ggdb -ffreestanding -nostdlib $(ALL_OBJS) -lgcc 
+
+grub/noOs-serial.bin: linker.ld $(SERIAL_OBJS)
+	i686-elf-gcc -T $< -o $@ -g -ggdb -ffreestanding -nostdlib $(SERIAL_OBJS) -lgcc
+
+%.o: %.c
+	i686-elf-gcc $(CFLAGS) $< -o $@ 
+
+%.o.serial: %.c
+	i686-elf-gcc $(CFLAGS) $(SERIAL) $< -o $@
+
+%.o: %.asm
+	nasm $(INCLUDE_NASM) -g -F dwarf -felf32 $< -o $@
+
+%.o.serial: %.asm
+	nasm $(INCLUDE_NASM) -g -F dwarf -felf32 $< -o $@ $(SERIAL)
