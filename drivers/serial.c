@@ -14,12 +14,11 @@ void init_serial() {
 
     // Check if serial is faulty (i.e: not same byte as sent)
     if (inb(SERIAL_PORT + 0) != 0xae)
-        return 1;
+        return;
 
     // If serial is not faulty set it in normal operation mode
     // (not-loopback with IRQs enabled and OUT#1 and OUT#2 bits enabled)
     outb(SERIAL_PORT + 4, 0x0f);
-    return 0;
 
 }
 

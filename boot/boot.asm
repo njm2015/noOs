@@ -5,6 +5,13 @@ FLAGS equ MBALIGN | MEMINFO | FRAMEBUFFER
 MAGIC    equ  0x1BADB002
 CHECKSUM equ -(MAGIC + FLAGS)
 
+ADDR_SIZE equ 4     ; 4 bytes = 32 bit add
+
+DISPLAY_WIDTH equ 640
+DISPLAY_HEIGHT equ 400
+CHAR_WIDTH equ 8
+CHAR_HEIGHT equ 16
+
 section .multiboot
 bits 32
 align 4
@@ -13,8 +20,8 @@ align 4
     dd CHECKSUM
     dd 0,0,0,0,0
     dd 0
-    dd 1920
-    dd 1080
+    dd DISPLAY_WIDTH
+    dd DISPLAY_HEIGHT
     dd 32
 
 section .text
@@ -41,8 +48,8 @@ _start:
     push ebx            ; Multiboot Info Struct Address.
     push eax            ; Multiboot MAGIC number.
 
-    extern init_idt
-    call init_idt
+    extern idt_init
+    call idt_init
 
     lidt [idt_addr]
 
@@ -53,24 +60,4 @@ _start:
     jmp .hang
 .end:
 
-section .bss
-bits 32
-align 16
-    stack_bottom:
-    resb 16384          ; 16 KB stack.
-    stack_top:
-
-global cursor_pos
-cursor_pos: resd 1
-
-global fb
-fb: resd 1
-;fb_overflow: resw
-
-global interrupts
-interrupts: resq 256
-;interrupts: times 256 resq
-
-global idt_addr
-idt_addr: resb 6
-;idt_addr times 6 resb
+%include "boot/bss.asm"

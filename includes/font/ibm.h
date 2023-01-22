@@ -6,6 +6,9 @@
 #ifndef IBM_H
 #define IBM_H
 
+#define CHAR_WIDTH 8
+#define CHAR_HEIGHT 16
+
 /*Store the image of the letters (glyph)*/
 static const uint8_t font_map[] = 
 {

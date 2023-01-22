@@ -10,7 +10,8 @@
 
 #define PS2_SCANCODE_PORT 0x60
 
-void init_ps2();
-void ps2_isr();
+extern void ps2_isr();
+
+void ps2_init();
 
 #endif

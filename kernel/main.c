@@ -9,6 +9,9 @@
 #include "idt.h"
 #include "keyboard.h"
 #include "serial.h"
+#include "cr.h"
+#include "console.h"
+#include "ps2.h"
 
 #if defined (SERIAL)
     #define PUTC(c) putc_serial(c)
@@ -22,8 +25,7 @@
     #define PUTS(c) types(c)
 #endif
 
-extern uint32_t* fb;
-extern void (test_irq)(void);
+extern void* console_char_buf;
 
 void kernel_main(uint32_t magic_number, uint32_t mb_addr) {
 
@@ -31,37 +33,18 @@ void kernel_main(uint32_t magic_number, uint32_t mb_addr) {
         return;
 
     multiboot_info_t* mbi = (multiboot_info_t*) mb_addr;
-    fb = (uint32_t*) mbi->framebuffer_addr;
+    display_init(mbi);
+    console_init(get_display_width() / CHAR_WIDTH, get_display_height() / CHAR_HEIGHT, (char**) &console_char_buf);
 
-    init_idt();
     PIC_remap(0x20, 0x28);
     clear_all_irqs();
 
 #ifndef SERIAL 
-    init_keyboard(); 
-    init_ps2();
+    keyboard_init(); 
+    ps2_init();
 #endif
 
     enable_interrupts();
-
-    PUTS("start the clock...");
-
-    double arr[800];
-
-    for (size_t iter = 0; iter < 100; ++iter) {
-        for (size_t iter_j = 0; iter_j < 1000; ++iter_j) {
-            arr[0] = 0.8 * iter_j;
-            arr[1] = 0.2 * iter_j;
-
-            for (size_t i = 2; i < 800; ++i) {
-                arr[i] = arr[i-1] * arr[i] - arr[i-2];
-                arr[2] = arr[i];
-            }
-        }
-    }
-
-
-    PUTS("hello user, enter some input");
 
 #ifdef SERIAL
     while (1) {
@@ -72,5 +55,16 @@ void kernel_main(uint32_t magic_number, uint32_t mb_addr) {
 
     }
 #endif
+
+    /*
+    typec('a');
+    typec('b');
+    typec('c');
+    typec('\n');
+    types("hello-hello-hello\n");
+
+    console_clear();
+    console_sync();    
+    */
 
 }

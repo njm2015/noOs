@@ -1,22 +1,15 @@
-#include <stddef.h>
-#include <stdint.h>
+#include "keyboard.h"
 
-#include "idt.h"
-#include "pic.h"
-#include "io.h"
-#include "display.h"
+extern void keyboard_isr();
 
-#ifndef KEYBOARD_H
-#define KEYBOARD_H
+void keyboard_init() {
 
-#define KEYBOARD_SCANCODE_PORT 0x60
+    IRQ_clear_mask(1);                              /* enable IRQ1 line */
+    set_idt_entry(0x21, keyboard_isr);   /* set IDT entry */
 
-void init_keyboard();
-void keyboard_isr();
+}
 
-void temp_keyboard_isr();
-
-static const char keymap[] = {
+const char scancode_map[] = {
     0x0,    /* no value */
     0x1b,   /* ESC */
     '1',
@@ -78,5 +71,29 @@ static const char keymap[] = {
     0x0    /* control (caps lock) */
 };
 
+/*
+void keyboard_isr() {
 
-#endif
+    INTERRUPT_START;
+
+    uint8_t scancode = inw(KEYBOARD_SCANCODE_PORT);
+    if (scancode < 58) {
+
+        char c = keymap[scancode];
+        if (c > 0) {
+        
+            typec(c);
+
+        } else {
+
+            // do control char stuff here
+
+        }
+
+    }
+
+    handle_interrupt(1);
+    INTERRUPT_END;
+
+}
+*/

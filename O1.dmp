@@ -1,0 +1,1191 @@
+
+grub/noOs.bin:     file format elf32-i386
+
+
+Disassembly of section .text:
+
+00100000 <_start-0x30>:
+  100000:	02 b0 ad 1b 07 00    	add    dh,BYTE PTR [eax+0x71bad]
+  100006:	00 00                	add    BYTE PTR [eax],al
+  100008:	f7 4f 52 e4 00 00 00 	test   DWORD PTR [edi+0x52],0xe4
+	...
+  100023:	00 80 02 00 00 90    	add    BYTE PTR [eax-0x6ffffffe],al
+  100029:	01 00                	add    DWORD PTR [eax],eax
+  10002b:	00 20                	add    BYTE PTR [eax],ah
+  10002d:	00 00                	add    BYTE PTR [eax],al
+	...
+
+00100030 <_start>:
+  100030:	0f 01 15 00 20 10 00 	lgdtd  ds:0x102000
+  100037:	ea 3e 00 10 00 08 00 	jmp    0x8:0x10003e
+
+0010003e <_start.far_jmp>:
+  10003e:	ba 10 00 00 00       	mov    edx,0x10
+  100043:	8e da                	mov    ds,edx
+  100045:	8e d2                	mov    ss,edx
+  100047:	8e c2                	mov    es,edx
+  100049:	8e e2                	mov    fs,edx
+  10004b:	8e ea                	mov    gs,edx
+  10004d:	bc 00 30 20 00       	mov    esp,0x203000
+  100052:	53                   	push   ebx
+  100053:	50                   	push   eax
+  100054:	e8 43 00 00 00       	call   10009c <idt_init>
+  100059:	0f 01 1d 04 38 20 00 	lidtd  ds:0x203804
+  100060:	e8 23 06 00 00       	call   100688 <kernel_main>
+
+00100065 <_start.hang>:
+  100065:	f4                   	hlt
+  100066:	eb fd                	jmp    100065 <_start.hang>
+
+00100068 <get_cr0>:
+  100068:	0f 20 c0             	mov    eax,cr0
+  10006b:	89 c2                	mov    edx,eax
+  10006d:	89 d0                	mov    eax,edx
+  10006f:	c3                   	ret
+
+00100070 <inb>:
+  100070:	55                   	push   ebp
+  100071:	89 e5                	mov    ebp,esp
+  100073:	8b 55 08             	mov    edx,DWORD PTR [ebp+0x8]
+  100076:	ec                   	in     al,dx
+  100077:	5d                   	pop    ebp
+  100078:	c3                   	ret
+
+00100079 <outb>:
+  100079:	55                   	push   ebp
+  10007a:	89 e5                	mov    ebp,esp
+  10007c:	8b 55 08             	mov    edx,DWORD PTR [ebp+0x8]
+  10007f:	8a 45 0c             	mov    al,BYTE PTR [ebp+0xc]
+  100082:	ee                   	out    dx,al
+  100083:	5d                   	pop    ebp
+  100084:	c3                   	ret
+
+00100085 <inw>:
+  100085:	55                   	push   ebp
+  100086:	89 e5                	mov    ebp,esp
+  100088:	8b 55 08             	mov    edx,DWORD PTR [ebp+0x8]
+  10008b:	66 ed                	in     ax,dx
+  10008d:	5d                   	pop    ebp
+  10008e:	c3                   	ret
+
+0010008f <outw>:
+  10008f:	55                   	push   ebp
+  100090:	89 e5                	mov    ebp,esp
+  100092:	8b 55 08             	mov    edx,DWORD PTR [ebp+0x8]
+  100095:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+  100098:	66 ef                	out    dx,ax
+  10009a:	5d                   	pop    ebp
+  10009b:	c3                   	ret
+
+0010009c <idt_init>:
+  10009c:	ba 44 01 10 00       	mov    edx,0x100144
+  1000a1:	c1 ea 10             	shr    edx,0x10
+  1000a4:	b8 00 00 00 00       	mov    eax,0x0
+  1000a9:	b9 44 01 10 00       	mov    ecx,0x100144
+  1000ae:	66 89 0c c5 04 30 20 	mov    WORD PTR [eax*8+0x203004],cx
+  1000b5:	00 
+  1000b6:	66 c7 04 c5 06 30 20 	mov    WORD PTR [eax*8+0x203006],0x8
+  1000bd:	00 08 00 
+  1000c0:	c6 04 c5 08 30 20 00 	mov    BYTE PTR [eax*8+0x203008],0x0
+  1000c7:	00 
+  1000c8:	c6 04 c5 09 30 20 00 	mov    BYTE PTR [eax*8+0x203009],0x8e
+  1000cf:	8e 
+  1000d0:	66 89 14 c5 0a 30 20 	mov    WORD PTR [eax*8+0x20300a],dx
+  1000d7:	00 
+  1000d8:	40                   	inc    eax
+  1000d9:	3d 00 01 00 00       	cmp    eax,0x100
+  1000de:	75 ce                	jne    1000ae <idt_init+0x12>
+  1000e0:	66 c7 05 04 38 20 00 	mov    WORD PTR ds:0x203804,0x7ff
+  1000e7:	ff 07 
+  1000e9:	c7 05 06 38 20 00 04 	mov    DWORD PTR ds:0x203806,0x203004
+  1000f0:	30 20 00 
+  1000f3:	c3                   	ret
+
+001000f4 <set_idt_entry>:
+  1000f4:	55                   	push   ebp
+  1000f5:	89 e5                	mov    ebp,esp
+  1000f7:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+  1000fa:	0f b6 55 08          	movzx  edx,BYTE PTR [ebp+0x8]
+  1000fe:	66 89 04 d5 04 30 20 	mov    WORD PTR [edx*8+0x203004],ax
+  100105:	00 
+  100106:	c1 e8 10             	shr    eax,0x10
+  100109:	66 89 04 d5 0a 30 20 	mov    WORD PTR [edx*8+0x20300a],ax
+  100110:	00 
+  100111:	5d                   	pop    ebp
+  100112:	c3                   	ret
+
+00100113 <handle_interrupt>:
+  100113:	55                   	push   ebp
+  100114:	89 e5                	mov    ebp,esp
+  100116:	83 ec 08             	sub    esp,0x8
+  100119:	80 7d 08 07          	cmp    BYTE PTR [ebp+0x8],0x7
+  10011d:	77 11                	ja     100130 <handle_interrupt+0x1d>
+  10011f:	83 ec 08             	sub    esp,0x8
+  100122:	6a 20                	push   0x20
+  100124:	6a 20                	push   0x20
+  100126:	e8 4e ff ff ff       	call   100079 <outb>
+  10012b:	83 c4 10             	add    esp,0x10
+  10012e:	c9                   	leave
+  10012f:	c3                   	ret
+  100130:	83 ec 08             	sub    esp,0x8
+  100133:	6a 20                	push   0x20
+  100135:	68 a0 00 00 00       	push   0xa0
+  10013a:	e8 3a ff ff ff       	call   100079 <outb>
+  10013f:	83 c4 10             	add    esp,0x10
+  100142:	eb db                	jmp    10011f <handle_interrupt+0xc>
+
+00100144 <default_isr>:
+  100144:	55                   	push   ebp
+  100145:	89 e5                	mov    ebp,esp
+  100147:	83 ec 14             	sub    esp,0x14
+  10014a:	60                   	pusha
+  10014b:	6a 08                	push   0x8
+  10014d:	e8 c1 ff ff ff       	call   100113 <handle_interrupt>
+  100152:	61                   	popa
+  100153:	c9                   	leave
+  100154:	cf                   	iret
+  100155:	83 c4 10             	add    esp,0x10
+  100158:	c9                   	leave
+  100159:	c3                   	ret
+
+0010015a <spurious_isr>:
+  10015a:	c3                   	ret
+
+0010015b <PIC_remap>:
+  10015b:	55                   	push   ebp
+  10015c:	89 e5                	mov    ebp,esp
+  10015e:	56                   	push   esi
+  10015f:	53                   	push   ebx
+  100160:	83 ec 0c             	sub    esp,0xc
+  100163:	6a 21                	push   0x21
+  100165:	e8 06 ff ff ff       	call   100070 <inb>
+  10016a:	89 c6                	mov    esi,eax
+  10016c:	c7 04 24 a1 00 00 00 	mov    DWORD PTR [esp],0xa1
+  100173:	e8 f8 fe ff ff       	call   100070 <inb>
+  100178:	88 c3                	mov    bl,al
+  10017a:	83 c4 08             	add    esp,0x8
+  10017d:	6a 11                	push   0x11
+  10017f:	6a 20                	push   0x20
+  100181:	e8 f3 fe ff ff       	call   100079 <outb>
+  100186:	83 c4 08             	add    esp,0x8
+  100189:	6a 11                	push   0x11
+  10018b:	68 a0 00 00 00       	push   0xa0
+  100190:	e8 e4 fe ff ff       	call   100079 <outb>
+  100195:	83 c4 08             	add    esp,0x8
+  100198:	0f b6 45 08          	movzx  eax,BYTE PTR [ebp+0x8]
+  10019c:	50                   	push   eax
+  10019d:	6a 21                	push   0x21
+  10019f:	e8 d5 fe ff ff       	call   100079 <outb>
+  1001a4:	83 c4 08             	add    esp,0x8
+  1001a7:	0f b6 45 0c          	movzx  eax,BYTE PTR [ebp+0xc]
+  1001ab:	50                   	push   eax
+  1001ac:	68 a1 00 00 00       	push   0xa1
+  1001b1:	e8 c3 fe ff ff       	call   100079 <outb>
+  1001b6:	83 c4 08             	add    esp,0x8
+  1001b9:	6a 04                	push   0x4
+  1001bb:	6a 21                	push   0x21
+  1001bd:	e8 b7 fe ff ff       	call   100079 <outb>
+  1001c2:	83 c4 08             	add    esp,0x8
+  1001c5:	6a 02                	push   0x2
+  1001c7:	68 a1 00 00 00       	push   0xa1
+  1001cc:	e8 a8 fe ff ff       	call   100079 <outb>
+  1001d1:	83 c4 08             	add    esp,0x8
+  1001d4:	6a 01                	push   0x1
+  1001d6:	6a 21                	push   0x21
+  1001d8:	e8 9c fe ff ff       	call   100079 <outb>
+  1001dd:	83 c4 08             	add    esp,0x8
+  1001e0:	6a 01                	push   0x1
+  1001e2:	68 a1 00 00 00       	push   0xa1
+  1001e7:	e8 8d fe ff ff       	call   100079 <outb>
+  1001ec:	83 c4 08             	add    esp,0x8
+  1001ef:	89 f0                	mov    eax,esi
+  1001f1:	0f b6 c0             	movzx  eax,al
+  1001f4:	50                   	push   eax
+  1001f5:	6a 21                	push   0x21
+  1001f7:	e8 7d fe ff ff       	call   100079 <outb>
+  1001fc:	83 c4 08             	add    esp,0x8
+  1001ff:	0f b6 db             	movzx  ebx,bl
+  100202:	53                   	push   ebx
+  100203:	68 a1 00 00 00       	push   0xa1
+  100208:	e8 6c fe ff ff       	call   100079 <outb>
+  10020d:	83 c4 10             	add    esp,0x10
+  100210:	8d 65 f8             	lea    esp,[ebp-0x8]
+  100213:	5b                   	pop    ebx
+  100214:	5e                   	pop    esi
+  100215:	5d                   	pop    ebp
+  100216:	c3                   	ret
+
+00100217 <enable_interrupts>:
+  100217:	fb                   	sti
+  100218:	c3                   	ret
+
+00100219 <clear_all_irqs>:
+  100219:	55                   	push   ebp
+  10021a:	89 e5                	mov    ebp,esp
+  10021c:	83 ec 10             	sub    esp,0x10
+  10021f:	68 ff 00 00 00       	push   0xff
+  100224:	6a 21                	push   0x21
+  100226:	e8 4e fe ff ff       	call   100079 <outb>
+  10022b:	83 c4 08             	add    esp,0x8
+  10022e:	68 ff 00 00 00       	push   0xff
+  100233:	68 a1 00 00 00       	push   0xa1
+  100238:	e8 3c fe ff ff       	call   100079 <outb>
+  10023d:	83 c4 10             	add    esp,0x10
+  100240:	c9                   	leave
+  100241:	c3                   	ret
+
+00100242 <IRQ_set_mask>:
+  100242:	55                   	push   ebp
+  100243:	89 e5                	mov    ebp,esp
+  100245:	56                   	push   esi
+  100246:	53                   	push   ebx
+  100247:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+  10024a:	3c 07                	cmp    al,0x7
+  10024c:	76 36                	jbe    100284 <IRQ_set_mask+0x42>
+  10024e:	8d 70 f8             	lea    esi,[eax-0x8]
+  100251:	bb a1 00 00 00       	mov    ebx,0xa1
+  100256:	0f b7 db             	movzx  ebx,bx
+  100259:	83 ec 0c             	sub    esp,0xc
+  10025c:	53                   	push   ebx
+  10025d:	e8 0e fe ff ff       	call   100070 <inb>
+  100262:	83 c4 08             	add    esp,0x8
+  100265:	ba 01 00 00 00       	mov    edx,0x1
+  10026a:	89 f1                	mov    ecx,esi
+  10026c:	d3 e2                	shl    edx,cl
+  10026e:	09 d0                	or     eax,edx
+  100270:	0f b6 c0             	movzx  eax,al
+  100273:	50                   	push   eax
+  100274:	53                   	push   ebx
+  100275:	e8 ff fd ff ff       	call   100079 <outb>
+  10027a:	83 c4 10             	add    esp,0x10
+  10027d:	8d 65 f8             	lea    esp,[ebp-0x8]
+  100280:	5b                   	pop    ebx
+  100281:	5e                   	pop    esi
+  100282:	5d                   	pop    ebp
+  100283:	c3                   	ret
+  100284:	89 c6                	mov    esi,eax
+  100286:	bb 21 00 00 00       	mov    ebx,0x21
+  10028b:	eb c9                	jmp    100256 <IRQ_set_mask+0x14>
+
+0010028d <IRQ_clear_mask>:
+  10028d:	55                   	push   ebp
+  10028e:	89 e5                	mov    ebp,esp
+  100290:	56                   	push   esi
+  100291:	53                   	push   ebx
+  100292:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+  100295:	3c 07                	cmp    al,0x7
+  100297:	76 38                	jbe    1002d1 <IRQ_clear_mask+0x44>
+  100299:	8d 70 f8             	lea    esi,[eax-0x8]
+  10029c:	bb a1 00 00 00       	mov    ebx,0xa1
+  1002a1:	0f b7 db             	movzx  ebx,bx
+  1002a4:	83 ec 0c             	sub    esp,0xc
+  1002a7:	53                   	push   ebx
+  1002a8:	e8 c3 fd ff ff       	call   100070 <inb>
+  1002ad:	88 c2                	mov    dl,al
+  1002af:	83 c4 08             	add    esp,0x8
+  1002b2:	b8 fe ff ff ff       	mov    eax,0xfffffffe
+  1002b7:	89 f1                	mov    ecx,esi
+  1002b9:	d3 c0                	rol    eax,cl
+  1002bb:	21 d0                	and    eax,edx
+  1002bd:	0f b6 c0             	movzx  eax,al
+  1002c0:	50                   	push   eax
+  1002c1:	53                   	push   ebx
+  1002c2:	e8 b2 fd ff ff       	call   100079 <outb>
+  1002c7:	83 c4 10             	add    esp,0x10
+  1002ca:	8d 65 f8             	lea    esp,[ebp-0x8]
+  1002cd:	5b                   	pop    ebx
+  1002ce:	5e                   	pop    esi
+  1002cf:	5d                   	pop    ebp
+  1002d0:	c3                   	ret
+  1002d1:	89 c6                	mov    esi,eax
+  1002d3:	bb 21 00 00 00       	mov    ebx,0x21
+  1002d8:	eb c7                	jmp    1002a1 <IRQ_clear_mask+0x14>
+
+001002da <get_console_ctx>:
+  1002da:	b8 1c 46 20 00       	mov    eax,0x20461c
+  1002df:	c3                   	ret
+
+001002e0 <color_cursor>:
+  1002e0:	55                   	push   ebp
+  1002e1:	89 e5                	mov    ebp,esp
+  1002e3:	57                   	push   edi
+  1002e4:	56                   	push   esi
+  1002e5:	53                   	push   ebx
+  1002e6:	83 ec 0c             	sub    esp,0xc
+  1002e9:	8b 7d 08             	mov    edi,DWORD PTR [ebp+0x8]
+  1002ec:	0f b6 15 2c 46 20 00 	movzx  edx,BYTE PTR ds:0x20462c
+  1002f3:	b8 10 00 00 00       	mov    eax,0x10
+  1002f8:	29 d0                	sub    eax,edx
+  1002fa:	be 10 00 00 00       	mov    esi,0x10
+  1002ff:	83 f8 0f             	cmp    eax,0xf
+  100302:	76 1b                	jbe    10031f <color_cursor+0x3f>
+  100304:	8d 65 f4             	lea    esp,[ebp-0xc]
+  100307:	5b                   	pop    ebx
+  100308:	5e                   	pop    esi
+  100309:	5f                   	pop    edi
+  10030a:	5d                   	pop    ebp
+  10030b:	c3                   	ret
+  10030c:	4e                   	dec    esi
+  10030d:	0f b6 15 2c 46 20 00 	movzx  edx,BYTE PTR ds:0x20462c
+  100314:	b8 10 00 00 00       	mov    eax,0x10
+  100319:	29 d0                	sub    eax,edx
+  10031b:	39 f0                	cmp    eax,esi
+  10031d:	73 e5                	jae    100304 <color_cursor+0x24>
+  10031f:	bb 00 00 00 00       	mov    ebx,0x0
+  100324:	a1 1c 46 20 00       	mov    eax,ds:0x20461c
+  100329:	8b 0d 24 46 20 00    	mov    ecx,DWORD PTR ds:0x204624
+  10032f:	c1 e1 03             	shl    ecx,0x3
+  100332:	83 ec 04             	sub    esp,0x4
+  100335:	57                   	push   edi
+  100336:	ba 00 00 00 00       	mov    edx,0x0
+  10033b:	f7 f1                	div    ecx
+  10033d:	01 f0                	add    eax,esi
+  10033f:	50                   	push   eax
+  100340:	01 da                	add    edx,ebx
+  100342:	52                   	push   edx
+  100343:	e8 ee 04 00 00       	call   100836 <put_pixel>
+  100348:	43                   	inc    ebx
+  100349:	83 c4 10             	add    esp,0x10
+  10034c:	83 fb 08             	cmp    ebx,0x8
+  10034f:	75 d3                	jne    100324 <color_cursor+0x44>
+  100351:	eb b9                	jmp    10030c <color_cursor+0x2c>
+
+00100353 <draw_cursor>:
+  100353:	55                   	push   ebp
+  100354:	89 e5                	mov    ebp,esp
+  100356:	83 ec 14             	sub    esp,0x14
+  100359:	68 ff ff ff 00       	push   0xffffff
+  10035e:	e8 7d ff ff ff       	call   1002e0 <color_cursor>
+  100363:	83 c4 10             	add    esp,0x10
+  100366:	c9                   	leave
+  100367:	c3                   	ret
+
+00100368 <console_init>:
+  100368:	55                   	push   ebp
+  100369:	89 e5                	mov    ebp,esp
+  10036b:	56                   	push   esi
+  10036c:	53                   	push   ebx
+  10036d:	8b 4d 08             	mov    ecx,DWORD PTR [ebp+0x8]
+  100370:	8b 5d 0c             	mov    ebx,DWORD PTR [ebp+0xc]
+  100373:	8b 45 10             	mov    eax,DWORD PTR [ebp+0x10]
+  100376:	c7 05 1c 46 20 00 00 	mov    DWORD PTR ds:0x20461c,0x0
+  10037d:	00 00 00 
+  100380:	89 0d 24 46 20 00    	mov    DWORD PTR ds:0x204624,ecx
+  100386:	89 1d 28 46 20 00    	mov    DWORD PTR ds:0x204628,ebx
+  10038c:	c6 05 2c 46 20 00 03 	mov    BYTE PTR ds:0x20462c,0x3
+  100393:	a3 20 46 20 00       	mov    ds:0x204620,eax
+  100398:	85 db                	test   ebx,ebx
+  10039a:	74 35                	je     1003d1 <console_init+0x69>
+  10039c:	8d 14 98             	lea    edx,[eax+ebx*4]
+  10039f:	b8 00 00 00 00       	mov    eax,0x0
+  1003a4:	8b 35 20 46 20 00    	mov    esi,DWORD PTR ds:0x204620
+  1003aa:	89 14 86             	mov    DWORD PTR [esi+eax*4],edx
+  1003ad:	40                   	inc    eax
+  1003ae:	01 ca                	add    edx,ecx
+  1003b0:	39 c3                	cmp    ebx,eax
+  1003b2:	75 f0                	jne    1003a4 <console_init+0x3c>
+  1003b4:	0f af c8             	imul   ecx,eax
+  1003b7:	85 c9                	test   ecx,ecx
+  1003b9:	74 16                	je     1003d1 <console_init+0x69>
+  1003bb:	b8 00 00 00 00       	mov    eax,0x0
+  1003c0:	8b 15 20 46 20 00    	mov    edx,DWORD PTR ds:0x204620
+  1003c6:	8b 12                	mov    edx,DWORD PTR [edx]
+  1003c8:	c6 04 02 00          	mov    BYTE PTR [edx+eax*1],0x0
+  1003cc:	40                   	inc    eax
+  1003cd:	39 c8                	cmp    eax,ecx
+  1003cf:	75 ef                	jne    1003c0 <console_init+0x58>
+  1003d1:	e8 7d ff ff ff       	call   100353 <draw_cursor>
+  1003d6:	5b                   	pop    ebx
+  1003d7:	5e                   	pop    esi
+  1003d8:	5d                   	pop    ebp
+  1003d9:	c3                   	ret
+
+001003da <undraw_cursor>:
+  1003da:	55                   	push   ebp
+  1003db:	89 e5                	mov    ebp,esp
+  1003dd:	83 ec 14             	sub    esp,0x14
+  1003e0:	6a 00                	push   0x0
+  1003e2:	e8 f9 fe ff ff       	call   1002e0 <color_cursor>
+  1003e7:	83 c4 10             	add    esp,0x10
+  1003ea:	c9                   	leave
+  1003eb:	c3                   	ret
+
+001003ec <scroll>:
+  1003ec:	55                   	push   ebp
+  1003ed:	89 e5                	mov    ebp,esp
+  1003ef:	57                   	push   edi
+  1003f0:	56                   	push   esi
+  1003f1:	53                   	push   ebx
+  1003f2:	83 ec 0c             	sub    esp,0xc
+  1003f5:	a1 28 46 20 00       	mov    eax,ds:0x204628
+  1003fa:	89 c2                	mov    edx,eax
+  1003fc:	c1 e2 04             	shl    edx,0x4
+  1003ff:	be 00 00 00 00       	mov    esi,0x0
+  100404:	83 fa 10             	cmp    edx,0x10
+  100407:	77 4c                	ja     100455 <scroll+0x69>
+  100409:	8d b0 ff ff ff 0f    	lea    esi,[eax+0xfffffff]
+  10040f:	c1 e6 04             	shl    esi,0x4
+  100412:	a1 28 46 20 00       	mov    eax,ds:0x204628
+  100417:	c1 e0 04             	shl    eax,0x4
+  10041a:	39 c6                	cmp    esi,eax
+  10041c:	72 74                	jb     100492 <scroll+0xa6>
+  10041e:	8d 65 f4             	lea    esp,[ebp-0xc]
+  100421:	5b                   	pop    ebx
+  100422:	5e                   	pop    esi
+  100423:	5f                   	pop    edi
+  100424:	5d                   	pop    ebp
+  100425:	c3                   	ret
+  100426:	56                   	push   esi
+  100427:	53                   	push   ebx
+  100428:	57                   	push   edi
+  100429:	53                   	push   ebx
+  10042a:	e8 53 04 00 00       	call   100882 <copy_pixel>
+  10042f:	43                   	inc    ebx
+  100430:	a1 24 46 20 00       	mov    eax,ds:0x204624
+  100435:	c1 e0 03             	shl    eax,0x3
+  100438:	83 c4 10             	add    esp,0x10
+  10043b:	39 c3                	cmp    ebx,eax
+  10043d:	72 e7                	jb     100426 <scroll+0x3a>
+  10043f:	a1 28 46 20 00       	mov    eax,ds:0x204628
+  100444:	8d 4e 01             	lea    ecx,[esi+0x1]
+  100447:	89 c2                	mov    edx,eax
+  100449:	c1 e2 04             	shl    edx,0x4
+  10044c:	83 c6 11             	add    esi,0x11
+  10044f:	39 d6                	cmp    esi,edx
+  100451:	73 b6                	jae    100409 <scroll+0x1d>
+  100453:	89 ce                	mov    esi,ecx
+  100455:	8d 7e 10             	lea    edi,[esi+0x10]
+  100458:	bb 00 00 00 00       	mov    ebx,0x0
+  10045d:	a1 24 46 20 00       	mov    eax,ds:0x204624
+  100462:	c1 e0 03             	shl    eax,0x3
+  100465:	75 bf                	jne    100426 <scroll+0x3a>
+  100467:	eb d6                	jmp    10043f <scroll+0x53>
+  100469:	83 ec 04             	sub    esp,0x4
+  10046c:	6a 00                	push   0x0
+  10046e:	56                   	push   esi
+  10046f:	53                   	push   ebx
+  100470:	e8 c1 03 00 00       	call   100836 <put_pixel>
+  100475:	43                   	inc    ebx
+  100476:	a1 24 46 20 00       	mov    eax,ds:0x204624
+  10047b:	c1 e0 03             	shl    eax,0x3
+  10047e:	83 c4 10             	add    esp,0x10
+  100481:	39 c3                	cmp    ebx,eax
+  100483:	72 e4                	jb     100469 <scroll+0x7d>
+  100485:	46                   	inc    esi
+  100486:	a1 28 46 20 00       	mov    eax,ds:0x204628
+  10048b:	c1 e0 04             	shl    eax,0x4
+  10048e:	39 c6                	cmp    esi,eax
+  100490:	73 8c                	jae    10041e <scroll+0x32>
+  100492:	bb 00 00 00 00       	mov    ebx,0x0
+  100497:	a1 24 46 20 00       	mov    eax,ds:0x204624
+  10049c:	c1 e0 03             	shl    eax,0x3
+  10049f:	75 c8                	jne    100469 <scroll+0x7d>
+  1004a1:	eb e2                	jmp    100485 <scroll+0x99>
+
+001004a3 <putc>:
+  1004a3:	55                   	push   ebp
+  1004a4:	89 e5                	mov    ebp,esp
+  1004a6:	57                   	push   edi
+  1004a7:	56                   	push   esi
+  1004a8:	53                   	push   ebx
+  1004a9:	83 ec 0c             	sub    esp,0xc
+  1004ac:	8b 7d 08             	mov    edi,DWORD PTR [ebp+0x8]
+  1004af:	8b 1d 1c 46 20 00    	mov    ebx,DWORD PTR ds:0x20461c
+  1004b5:	e8 70 03 00 00       	call   10082a <get_display_width>
+  1004ba:	89 c6                	mov    esi,eax
+  1004bc:	89 f8                	mov    eax,edi
+  1004be:	3c 0a                	cmp    al,0xa
+  1004c0:	75 2e                	jne    1004f0 <putc+0x4d>
+  1004c2:	89 d8                	mov    eax,ebx
+  1004c4:	ba 00 00 00 00       	mov    edx,0x0
+  1004c9:	f7 f6                	div    esi
+  1004cb:	89 c3                	mov    ebx,eax
+  1004cd:	83 c3 10             	add    ebx,0x10
+  1004d0:	0f af de             	imul   ebx,esi
+  1004d3:	e8 58 03 00 00       	call   100830 <get_display_height>
+  1004d8:	8d 53 08             	lea    edx,[ebx+0x8]
+  1004db:	0f af c6             	imul   eax,esi
+  1004de:	39 c2                	cmp    edx,eax
+  1004e0:	73 60                	jae    100542 <putc+0x9f>
+  1004e2:	89 1d 1c 46 20 00    	mov    DWORD PTR ds:0x20461c,ebx
+  1004e8:	8d 65 f4             	lea    esp,[ebp-0xc]
+  1004eb:	5b                   	pop    ebx
+  1004ec:	5e                   	pop    esi
+  1004ed:	5f                   	pop    edi
+  1004ee:	5d                   	pop    ebp
+  1004ef:	c3                   	ret
+  1004f0:	89 d8                	mov    eax,ebx
+  1004f2:	c1 e8 03             	shr    eax,0x3
+  1004f5:	8b 15 20 46 20 00    	mov    edx,DWORD PTR ds:0x204620
+  1004fb:	8b 12                	mov    edx,DWORD PTR [edx]
+  1004fd:	89 f9                	mov    ecx,edi
+  1004ff:	88 0c 02             	mov    BYTE PTR [edx+eax*1],cl
+  100502:	68 ff ff ff 00       	push   0xffffff
+  100507:	89 d8                	mov    eax,ebx
+  100509:	ba 00 00 00 00       	mov    edx,0x0
+  10050e:	f7 f6                	div    esi
+  100510:	50                   	push   eax
+  100511:	52                   	push   edx
+  100512:	0f b6 f9             	movzx  edi,cl
+  100515:	57                   	push   edi
+  100516:	e8 d3 01 00 00       	call   1006ee <draw_char>
+  10051b:	83 c3 08             	add    ebx,0x8
+  10051e:	89 d8                	mov    eax,ebx
+  100520:	ba 00 00 00 00       	mov    edx,0x0
+  100525:	f7 f6                	div    esi
+  100527:	83 c4 10             	add    esp,0x10
+  10052a:	83 fa 07             	cmp    edx,0x7
+  10052d:	77 a4                	ja     1004d3 <putc+0x30>
+  10052f:	89 d8                	mov    eax,ebx
+  100531:	ba 00 00 00 00       	mov    edx,0x0
+  100536:	f7 f6                	div    esi
+  100538:	89 c3                	mov    ebx,eax
+  10053a:	83 c3 0f             	add    ebx,0xf
+  10053d:	0f af de             	imul   ebx,esi
+  100540:	eb 91                	jmp    1004d3 <putc+0x30>
+  100542:	e8 a5 fe ff ff       	call   1003ec <scroll>
+  100547:	89 f0                	mov    eax,esi
+  100549:	c1 e0 04             	shl    eax,0x4
+  10054c:	29 c3                	sub    ebx,eax
+  10054e:	eb 92                	jmp    1004e2 <putc+0x3f>
+
+00100550 <puts>:
+  100550:	55                   	push   ebp
+  100551:	89 e5                	mov    ebp,esp
+  100553:	53                   	push   ebx
+  100554:	83 ec 04             	sub    esp,0x4
+  100557:	8b 5d 08             	mov    ebx,DWORD PTR [ebp+0x8]
+  10055a:	8a 03                	mov    al,BYTE PTR [ebx]
+  10055c:	84 c0                	test   al,al
+  10055e:	74 18                	je     100578 <puts+0x28>
+  100560:	43                   	inc    ebx
+  100561:	83 ec 0c             	sub    esp,0xc
+  100564:	0f b6 c0             	movzx  eax,al
+  100567:	50                   	push   eax
+  100568:	e8 36 ff ff ff       	call   1004a3 <putc>
+  10056d:	43                   	inc    ebx
+  10056e:	8a 43 ff             	mov    al,BYTE PTR [ebx-0x1]
+  100571:	83 c4 10             	add    esp,0x10
+  100574:	84 c0                	test   al,al
+  100576:	75 e9                	jne    100561 <puts+0x11>
+  100578:	8b 5d fc             	mov    ebx,DWORD PTR [ebp-0x4]
+  10057b:	c9                   	leave
+  10057c:	c3                   	ret
+
+0010057d <typec>:
+  10057d:	55                   	push   ebp
+  10057e:	89 e5                	mov    ebp,esp
+  100580:	53                   	push   ebx
+  100581:	83 ec 04             	sub    esp,0x4
+  100584:	8b 5d 08             	mov    ebx,DWORD PTR [ebp+0x8]
+  100587:	e8 4e fe ff ff       	call   1003da <undraw_cursor>
+  10058c:	83 ec 0c             	sub    esp,0xc
+  10058f:	0f b6 db             	movzx  ebx,bl
+  100592:	53                   	push   ebx
+  100593:	e8 0b ff ff ff       	call   1004a3 <putc>
+  100598:	e8 b6 fd ff ff       	call   100353 <draw_cursor>
+  10059d:	83 c4 10             	add    esp,0x10
+  1005a0:	8b 5d fc             	mov    ebx,DWORD PTR [ebp-0x4]
+  1005a3:	c9                   	leave
+  1005a4:	c3                   	ret
+
+001005a5 <types>:
+  1005a5:	55                   	push   ebp
+  1005a6:	89 e5                	mov    ebp,esp
+  1005a8:	53                   	push   ebx
+  1005a9:	83 ec 04             	sub    esp,0x4
+  1005ac:	8b 5d 08             	mov    ebx,DWORD PTR [ebp+0x8]
+  1005af:	e8 26 fe ff ff       	call   1003da <undraw_cursor>
+  1005b4:	8a 03                	mov    al,BYTE PTR [ebx]
+  1005b6:	84 c0                	test   al,al
+  1005b8:	74 18                	je     1005d2 <types+0x2d>
+  1005ba:	43                   	inc    ebx
+  1005bb:	83 ec 0c             	sub    esp,0xc
+  1005be:	0f b6 c0             	movzx  eax,al
+  1005c1:	50                   	push   eax
+  1005c2:	e8 dc fe ff ff       	call   1004a3 <putc>
+  1005c7:	43                   	inc    ebx
+  1005c8:	8a 43 ff             	mov    al,BYTE PTR [ebx-0x1]
+  1005cb:	83 c4 10             	add    esp,0x10
+  1005ce:	84 c0                	test   al,al
+  1005d0:	75 e9                	jne    1005bb <types+0x16>
+  1005d2:	e8 7c fd ff ff       	call   100353 <draw_cursor>
+  1005d7:	8b 5d fc             	mov    ebx,DWORD PTR [ebp-0x4]
+  1005da:	c9                   	leave
+  1005db:	c3                   	ret
+
+001005dc <console_clear>:
+  1005dc:	55                   	push   ebp
+  1005dd:	89 e5                	mov    ebp,esp
+  1005df:	56                   	push   esi
+  1005e0:	53                   	push   ebx
+  1005e1:	be 00 00 00 00       	mov    esi,0x0
+  1005e6:	eb 0f                	jmp    1005f7 <console_clear+0x1b>
+  1005e8:	83 ec 08             	sub    esp,0x8
+  1005eb:	6a 00                	push   0x0
+  1005ed:	56                   	push   esi
+  1005ee:	e8 61 02 00 00       	call   100854 <put_pixel_linear>
+  1005f3:	46                   	inc    esi
+  1005f4:	83 c4 10             	add    esp,0x10
+  1005f7:	e8 2e 02 00 00       	call   10082a <get_display_width>
+  1005fc:	89 c3                	mov    ebx,eax
+  1005fe:	e8 2d 02 00 00       	call   100830 <get_display_height>
+  100603:	0f af d8             	imul   ebx,eax
+  100606:	39 de                	cmp    esi,ebx
+  100608:	72 de                	jb     1005e8 <console_clear+0xc>
+  10060a:	8d 65 f8             	lea    esp,[ebp-0x8]
+  10060d:	5b                   	pop    ebx
+  10060e:	5e                   	pop    esi
+  10060f:	5d                   	pop    ebp
+  100610:	c3                   	ret
+
+00100611 <console_reinit>:
+  100611:	55                   	push   ebp
+  100612:	89 e5                	mov    ebp,esp
+  100614:	83 ec 08             	sub    esp,0x8
+  100617:	e8 c0 ff ff ff       	call   1005dc <console_clear>
+  10061c:	83 ec 04             	sub    esp,0x4
+  10061f:	ff 35 20 46 20 00    	push   DWORD PTR ds:0x204620
+  100625:	ff 35 28 46 20 00    	push   DWORD PTR ds:0x204628
+  10062b:	ff 35 24 46 20 00    	push   DWORD PTR ds:0x204624
+  100631:	e8 32 fd ff ff       	call   100368 <console_init>
+  100636:	83 c4 10             	add    esp,0x10
+  100639:	c9                   	leave
+  10063a:	c3                   	ret
+
+0010063b <console_sync>:
+  10063b:	55                   	push   ebp
+  10063c:	89 e5                	mov    ebp,esp
+  10063e:	56                   	push   esi
+  10063f:	53                   	push   ebx
+  100640:	e8 97 ff ff ff       	call   1005dc <console_clear>
+  100645:	a1 24 46 20 00       	mov    eax,ds:0x204624
+  10064a:	89 c2                	mov    edx,eax
+  10064c:	0f af 15 28 46 20 00 	imul   edx,DWORD PTR ds:0x204628
+  100653:	85 d2                	test   edx,edx
+  100655:	74 2a                	je     100681 <console_sync+0x46>
+  100657:	bb 00 00 00 00       	mov    ebx,0x0
+  10065c:	be 1c 46 20 00       	mov    esi,0x20461c
+  100661:	83 ec 04             	sub    esp,0x4
+  100664:	50                   	push   eax
+  100665:	53                   	push   ebx
+  100666:	8b 46 04             	mov    eax,DWORD PTR [esi+0x4]
+  100669:	ff 30                	push   DWORD PTR [eax]
+  10066b:	e8 e4 00 00 00       	call   100754 <redraw_char>
+  100670:	43                   	inc    ebx
+  100671:	8b 46 08             	mov    eax,DWORD PTR [esi+0x8]
+  100674:	89 c2                	mov    edx,eax
+  100676:	0f af 56 0c          	imul   edx,DWORD PTR [esi+0xc]
+  10067a:	83 c4 10             	add    esp,0x10
+  10067d:	39 d3                	cmp    ebx,edx
+  10067f:	72 e0                	jb     100661 <console_sync+0x26>
+  100681:	8d 65 f8             	lea    esp,[ebp-0x8]
+  100684:	5b                   	pop    ebx
+  100685:	5e                   	pop    esi
+  100686:	5d                   	pop    ebp
+  100687:	c3                   	ret
+
+00100688 <kernel_main>:
+  100688:	55                   	push   ebp
+  100689:	89 e5                	mov    ebp,esp
+  10068b:	53                   	push   ebx
+  10068c:	83 ec 04             	sub    esp,0x4
+  10068f:	81 7d 08 02 b0 ad 2b 	cmp    DWORD PTR [ebp+0x8],0x2badb002
+  100696:	74 05                	je     10069d <kernel_main+0x15>
+  100698:	8b 5d fc             	mov    ebx,DWORD PTR [ebp-0x4]
+  10069b:	c9                   	leave
+  10069c:	c3                   	ret
+  10069d:	83 ec 0c             	sub    esp,0xc
+  1006a0:	ff 75 0c             	push   DWORD PTR [ebp+0xc]
+  1006a3:	e8 50 01 00 00       	call   1007f8 <display_init>
+  1006a8:	e8 83 01 00 00       	call   100830 <get_display_height>
+  1006ad:	89 c3                	mov    ebx,eax
+  1006af:	e8 76 01 00 00       	call   10082a <get_display_width>
+  1006b4:	83 c4 0c             	add    esp,0xc
+  1006b7:	68 0a 38 20 00       	push   0x20380a
+  1006bc:	c1 eb 04             	shr    ebx,0x4
+  1006bf:	53                   	push   ebx
+  1006c0:	c1 e8 03             	shr    eax,0x3
+  1006c3:	50                   	push   eax
+  1006c4:	e8 9f fc ff ff       	call   100368 <console_init>
+  1006c9:	83 c4 08             	add    esp,0x8
+  1006cc:	6a 28                	push   0x28
+  1006ce:	6a 20                	push   0x20
+  1006d0:	e8 86 fa ff ff       	call   10015b <PIC_remap>
+  1006d5:	e8 3f fb ff ff       	call   100219 <clear_all_irqs>
+  1006da:	e8 f8 00 00 00       	call   1007d7 <keyboard_init>
+  1006df:	e8 e5 01 00 00       	call   1008c9 <ps2_init>
+  1006e4:	e8 2e fb ff ff       	call   100217 <enable_interrupts>
+  1006e9:	83 c4 10             	add    esp,0x10
+  1006ec:	eb aa                	jmp    100698 <kernel_main+0x10>
+
+001006ee <draw_char>:
+  1006ee:	55                   	push   ebp
+  1006ef:	89 e5                	mov    ebp,esp
+  1006f1:	57                   	push   edi
+  1006f2:	56                   	push   esi
+  1006f3:	53                   	push   ebx
+  1006f4:	83 ec 1c             	sub    esp,0x1c
+  1006f7:	0f b6 45 08          	movzx  eax,BYTE PTR [ebp+0x8]
+  1006fb:	c1 e0 04             	shl    eax,0x4
+  1006fe:	8d b0 80 0a 10 00    	lea    esi,[eax+0x100a80]
+  100704:	05 90 0a 10 00       	add    eax,0x100a90
+  100709:	89 45 e4             	mov    DWORD PTR [ebp-0x1c],eax
+  10070c:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+  10070f:	8d 78 08             	lea    edi,[eax+0x8]
+  100712:	eb 31                	jmp    100745 <draw_char+0x57>
+  100714:	4b                   	dec    ebx
+  100715:	74 23                	je     10073a <draw_char+0x4c>
+  100717:	0f b6 06             	movzx  eax,BYTE PTR [esi]
+  10071a:	88 d9                	mov    cl,bl
+  10071c:	d3 f8                	sar    eax,cl
+  10071e:	a8 01                	test   al,0x1
+  100720:	74 f2                	je     100714 <draw_char+0x26>
+  100722:	83 ec 04             	sub    esp,0x4
+  100725:	ff 75 14             	push   DWORD PTR [ebp+0x14]
+  100728:	ff 75 10             	push   DWORD PTR [ebp+0x10]
+  10072b:	89 f8                	mov    eax,edi
+  10072d:	29 d8                	sub    eax,ebx
+  10072f:	50                   	push   eax
+  100730:	e8 01 01 00 00       	call   100836 <put_pixel>
+  100735:	83 c4 10             	add    esp,0x10
+  100738:	eb da                	jmp    100714 <draw_char+0x26>
+  10073a:	ff 45 10             	inc    DWORD PTR [ebp+0x10]
+  10073d:	46                   	inc    esi
+  10073e:	8b 45 e4             	mov    eax,DWORD PTR [ebp-0x1c]
+  100741:	39 c6                	cmp    esi,eax
+  100743:	74 07                	je     10074c <draw_char+0x5e>
+  100745:	bb 08 00 00 00       	mov    ebx,0x8
+  10074a:	eb cb                	jmp    100717 <draw_char+0x29>
+  10074c:	8d 65 f4             	lea    esp,[ebp-0xc]
+  10074f:	5b                   	pop    ebx
+  100750:	5e                   	pop    esi
+  100751:	5f                   	pop    edi
+  100752:	5d                   	pop    ebp
+  100753:	c3                   	ret
+
+00100754 <redraw_char>:
+  100754:	55                   	push   ebp
+  100755:	89 e5                	mov    ebp,esp
+  100757:	53                   	push   ebx
+  100758:	83 ec 04             	sub    esp,0x4
+  10075b:	8b 5d 0c             	mov    ebx,DWORD PTR [ebp+0xc]
+  10075e:	8d 04 dd 00 00 00 00 	lea    eax,[ebx*8+0x0]
+  100765:	8b 55 10             	mov    edx,DWORD PTR [ebp+0x10]
+  100768:	8d 0c d5 00 00 00 00 	lea    ecx,[edx*8+0x0]
+  10076f:	68 ff ff ff 00       	push   0xffffff
+  100774:	ba 00 00 00 00       	mov    edx,0x0
+  100779:	f7 f1                	div    ecx
+  10077b:	50                   	push   eax
+  10077c:	52                   	push   edx
+  10077d:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+  100780:	0f b6 04 18          	movzx  eax,BYTE PTR [eax+ebx*1]
+  100784:	50                   	push   eax
+  100785:	e8 64 ff ff ff       	call   1006ee <draw_char>
+  10078a:	83 c4 10             	add    esp,0x10
+  10078d:	8b 5d fc             	mov    ebx,DWORD PTR [ebp-0x4]
+  100790:	c9                   	leave
+  100791:	c3                   	ret
+
+00100792 <keyboard_isr>:
+  100792:	55                   	push   ebp
+  100793:	89 e5                	mov    ebp,esp
+  100795:	83 ec 14             	sub    esp,0x14
+  100798:	60                   	pusha
+  100799:	6a 60                	push   0x60
+  10079b:	e8 e5 f8 ff ff       	call   100085 <inw>
+  1007a0:	83 c4 10             	add    esp,0x10
+  1007a3:	3c 39                	cmp    al,0x39
+  1007a5:	77 0d                	ja     1007b4 <keyboard_isr+0x22>
+  1007a7:	0f b6 c0             	movzx  eax,al
+  1007aa:	8a 80 80 12 10 00    	mov    al,BYTE PTR [eax+0x101280]
+  1007b0:	84 c0                	test   al,al
+  1007b2:	7f 12                	jg     1007c6 <keyboard_isr+0x34>
+  1007b4:	83 ec 0c             	sub    esp,0xc
+  1007b7:	6a 01                	push   0x1
+  1007b9:	e8 55 f9 ff ff       	call   100113 <handle_interrupt>
+  1007be:	61                   	popa
+  1007bf:	c9                   	leave
+  1007c0:	cf                   	iret
+  1007c1:	83 c4 10             	add    esp,0x10
+  1007c4:	c9                   	leave
+  1007c5:	c3                   	ret
+  1007c6:	83 ec 0c             	sub    esp,0xc
+  1007c9:	0f be c0             	movsx  eax,al
+  1007cc:	50                   	push   eax
+  1007cd:	e8 ab fd ff ff       	call   10057d <typec>
+  1007d2:	83 c4 10             	add    esp,0x10
+  1007d5:	eb dd                	jmp    1007b4 <keyboard_isr+0x22>
+
+001007d7 <keyboard_init>:
+  1007d7:	55                   	push   ebp
+  1007d8:	89 e5                	mov    ebp,esp
+  1007da:	83 ec 14             	sub    esp,0x14
+  1007dd:	6a 01                	push   0x1
+  1007df:	e8 a9 fa ff ff       	call   10028d <IRQ_clear_mask>
+  1007e4:	83 c4 08             	add    esp,0x8
+  1007e7:	68 92 07 10 00       	push   0x100792
+  1007ec:	6a 21                	push   0x21
+  1007ee:	e8 01 f9 ff ff       	call   1000f4 <set_idt_entry>
+  1007f3:	83 c4 10             	add    esp,0x10
+  1007f6:	c9                   	leave
+  1007f7:	c3                   	ret
+
+001007f8 <display_init>:
+  1007f8:	55                   	push   ebp
+  1007f9:	89 e5                	mov    ebp,esp
+  1007fb:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+  1007fe:	8b 50 58             	mov    edx,DWORD PTR [eax+0x58]
+  100801:	89 15 40 46 20 00    	mov    DWORD PTR ds:0x204640,edx
+  100807:	8b 50 64             	mov    edx,DWORD PTR [eax+0x64]
+  10080a:	89 15 44 46 20 00    	mov    DWORD PTR ds:0x204644,edx
+  100810:	8b 50 68             	mov    edx,DWORD PTR [eax+0x68]
+  100813:	89 15 48 46 20 00    	mov    DWORD PTR ds:0x204648,edx
+  100819:	0f b6 40 6c          	movzx  eax,BYTE PTR [eax+0x6c]
+  10081d:	a3 4c 46 20 00       	mov    ds:0x20464c,eax
+  100822:	5d                   	pop    ebp
+  100823:	c3                   	ret
+
+00100824 <get_display_ctx>:
+  100824:	b8 40 46 20 00       	mov    eax,0x204640
+  100829:	c3                   	ret
+
+0010082a <get_display_width>:
+  10082a:	a1 44 46 20 00       	mov    eax,ds:0x204644
+  10082f:	c3                   	ret
+
+00100830 <get_display_height>:
+  100830:	a1 48 46 20 00       	mov    eax,ds:0x204648
+  100835:	c3                   	ret
+
+00100836 <put_pixel>:
+  100836:	55                   	push   ebp
+  100837:	89 e5                	mov    ebp,esp
+  100839:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+  10083c:	0f af 05 44 46 20 00 	imul   eax,DWORD PTR ds:0x204644
+  100843:	03 45 08             	add    eax,DWORD PTR [ebp+0x8]
+  100846:	8b 4d 10             	mov    ecx,DWORD PTR [ebp+0x10]
+  100849:	8b 15 40 46 20 00    	mov    edx,DWORD PTR ds:0x204640
+  10084f:	89 0c 82             	mov    DWORD PTR [edx+eax*4],ecx
+  100852:	5d                   	pop    ebp
+  100853:	c3                   	ret
+
+00100854 <put_pixel_linear>:
+  100854:	55                   	push   ebp
+  100855:	89 e5                	mov    ebp,esp
+  100857:	8b 55 08             	mov    edx,DWORD PTR [ebp+0x8]
+  10085a:	8b 4d 0c             	mov    ecx,DWORD PTR [ebp+0xc]
+  10085d:	a1 40 46 20 00       	mov    eax,ds:0x204640
+  100862:	89 0c 90             	mov    DWORD PTR [eax+edx*4],ecx
+  100865:	5d                   	pop    ebp
+  100866:	c3                   	ret
+
+00100867 <get_pixel>:
+  100867:	55                   	push   ebp
+  100868:	89 e5                	mov    ebp,esp
+  10086a:	8b 45 0c             	mov    eax,DWORD PTR [ebp+0xc]
+  10086d:	0f af 05 44 46 20 00 	imul   eax,DWORD PTR ds:0x204644
+  100874:	03 45 08             	add    eax,DWORD PTR [ebp+0x8]
+  100877:	8b 15 40 46 20 00    	mov    edx,DWORD PTR ds:0x204640
+  10087d:	8b 04 82             	mov    eax,DWORD PTR [edx+eax*4]
+  100880:	5d                   	pop    ebp
+  100881:	c3                   	ret
+
+00100882 <copy_pixel>:
+  100882:	55                   	push   ebp
+  100883:	89 e5                	mov    ebp,esp
+  100885:	83 ec 10             	sub    esp,0x10
+  100888:	ff 75 0c             	push   DWORD PTR [ebp+0xc]
+  10088b:	ff 75 08             	push   DWORD PTR [ebp+0x8]
+  10088e:	e8 d4 ff ff ff       	call   100867 <get_pixel>
+  100893:	83 c4 0c             	add    esp,0xc
+  100896:	50                   	push   eax
+  100897:	ff 75 14             	push   DWORD PTR [ebp+0x14]
+  10089a:	ff 75 10             	push   DWORD PTR [ebp+0x10]
+  10089d:	e8 94 ff ff ff       	call   100836 <put_pixel>
+  1008a2:	83 c4 10             	add    esp,0x10
+  1008a5:	c9                   	leave
+  1008a6:	c3                   	ret
+
+001008a7 <ps2_isr>:
+  1008a7:	55                   	push   ebp
+  1008a8:	89 e5                	mov    ebp,esp
+  1008aa:	83 ec 14             	sub    esp,0x14
+  1008ad:	60                   	pusha
+  1008ae:	6a 60                	push   0x60
+  1008b0:	e8 d0 f7 ff ff       	call   100085 <inw>
+  1008b5:	c7 04 24 0c 00 00 00 	mov    DWORD PTR [esp],0xc
+  1008bc:	e8 52 f8 ff ff       	call   100113 <handle_interrupt>
+  1008c1:	61                   	popa
+  1008c2:	c9                   	leave
+  1008c3:	cf                   	iret
+  1008c4:	83 c4 10             	add    esp,0x10
+  1008c7:	c9                   	leave
+  1008c8:	c3                   	ret
+
+001008c9 <ps2_init>:
+  1008c9:	55                   	push   ebp
+  1008ca:	89 e5                	mov    ebp,esp
+  1008cc:	83 ec 14             	sub    esp,0x14
+  1008cf:	6a 0c                	push   0xc
+  1008d1:	e8 b7 f9 ff ff       	call   10028d <IRQ_clear_mask>
+  1008d6:	c7 04 24 02 00 00 00 	mov    DWORD PTR [esp],0x2
+  1008dd:	e8 ab f9 ff ff       	call   10028d <IRQ_clear_mask>
+  1008e2:	83 c4 08             	add    esp,0x8
+  1008e5:	68 a7 08 10 00       	push   0x1008a7
+  1008ea:	6a 2c                	push   0x2c
+  1008ec:	e8 03 f8 ff ff       	call   1000f4 <set_idt_entry>
+  1008f1:	83 c4 10             	add    esp,0x10
+  1008f4:	c9                   	leave
+  1008f5:	c3                   	ret
+
+001008f6 <init_serial>:
+  1008f6:	55                   	push   ebp
+  1008f7:	89 e5                	mov    ebp,esp
+  1008f9:	83 ec 10             	sub    esp,0x10
+  1008fc:	6a 00                	push   0x0
+  1008fe:	68 f9 03 00 00       	push   0x3f9
+  100903:	e8 71 f7 ff ff       	call   100079 <outb>
+  100908:	83 c4 08             	add    esp,0x8
+  10090b:	68 80 00 00 00       	push   0x80
+  100910:	68 fb 03 00 00       	push   0x3fb
+  100915:	e8 5f f7 ff ff       	call   100079 <outb>
+  10091a:	83 c4 08             	add    esp,0x8
+  10091d:	6a 03                	push   0x3
+  10091f:	68 f8 03 00 00       	push   0x3f8
+  100924:	e8 50 f7 ff ff       	call   100079 <outb>
+  100929:	83 c4 08             	add    esp,0x8
+  10092c:	6a 00                	push   0x0
+  10092e:	68 f9 03 00 00       	push   0x3f9
+  100933:	e8 41 f7 ff ff       	call   100079 <outb>
+  100938:	83 c4 08             	add    esp,0x8
+  10093b:	6a 03                	push   0x3
+  10093d:	68 fb 03 00 00       	push   0x3fb
+  100942:	e8 32 f7 ff ff       	call   100079 <outb>
+  100947:	83 c4 08             	add    esp,0x8
+  10094a:	68 c7 00 00 00       	push   0xc7
+  10094f:	68 fa 03 00 00       	push   0x3fa
+  100954:	e8 20 f7 ff ff       	call   100079 <outb>
+  100959:	83 c4 08             	add    esp,0x8
+  10095c:	6a 0b                	push   0xb
+  10095e:	68 fc 03 00 00       	push   0x3fc
+  100963:	e8 11 f7 ff ff       	call   100079 <outb>
+  100968:	83 c4 08             	add    esp,0x8
+  10096b:	6a 1e                	push   0x1e
+  10096d:	68 fc 03 00 00       	push   0x3fc
+  100972:	e8 02 f7 ff ff       	call   100079 <outb>
+  100977:	83 c4 08             	add    esp,0x8
+  10097a:	68 ae 00 00 00       	push   0xae
+  10097f:	68 fc 03 00 00       	push   0x3fc
+  100984:	e8 f0 f6 ff ff       	call   100079 <outb>
+  100989:	c7 04 24 f8 03 00 00 	mov    DWORD PTR [esp],0x3f8
+  100990:	e8 db f6 ff ff       	call   100070 <inb>
+  100995:	83 c4 10             	add    esp,0x10
+  100998:	3c ae                	cmp    al,0xae
+  10099a:	74 02                	je     10099e <init_serial+0xa8>
+  10099c:	c9                   	leave
+  10099d:	c3                   	ret
+  10099e:	83 ec 08             	sub    esp,0x8
+  1009a1:	6a 0f                	push   0xf
+  1009a3:	68 fc 03 00 00       	push   0x3fc
+  1009a8:	e8 cc f6 ff ff       	call   100079 <outb>
+  1009ad:	83 c4 10             	add    esp,0x10
+  1009b0:	eb ea                	jmp    10099c <init_serial+0xa6>
+
+001009b2 <serial_received>:
+  1009b2:	55                   	push   ebp
+  1009b3:	89 e5                	mov    ebp,esp
+  1009b5:	83 ec 14             	sub    esp,0x14
+  1009b8:	68 fd 03 00 00       	push   0x3fd
+  1009bd:	e8 ae f6 ff ff       	call   100070 <inb>
+  1009c2:	83 e0 01             	and    eax,0x1
+  1009c5:	c9                   	leave
+  1009c6:	c3                   	ret
+
+001009c7 <read_serial>:
+  1009c7:	55                   	push   ebp
+  1009c8:	89 e5                	mov    ebp,esp
+  1009ca:	83 ec 08             	sub    esp,0x8
+  1009cd:	e8 e0 ff ff ff       	call   1009b2 <serial_received>
+  1009d2:	85 c0                	test   eax,eax
+  1009d4:	74 f7                	je     1009cd <read_serial+0x6>
+  1009d6:	83 ec 0c             	sub    esp,0xc
+  1009d9:	68 f8 03 00 00       	push   0x3f8
+  1009de:	e8 8d f6 ff ff       	call   100070 <inb>
+  1009e3:	c9                   	leave
+  1009e4:	c3                   	ret
+
+001009e5 <is_transmit_empty>:
+  1009e5:	55                   	push   ebp
+  1009e6:	89 e5                	mov    ebp,esp
+  1009e8:	83 ec 14             	sub    esp,0x14
+  1009eb:	68 fd 03 00 00       	push   0x3fd
+  1009f0:	e8 7b f6 ff ff       	call   100070 <inb>
+  1009f5:	83 e0 20             	and    eax,0x20
+  1009f8:	c9                   	leave
+  1009f9:	c3                   	ret
+
+001009fa <write_serial>:
+  1009fa:	55                   	push   ebp
+  1009fb:	89 e5                	mov    ebp,esp
+  1009fd:	53                   	push   ebx
+  1009fe:	83 ec 04             	sub    esp,0x4
+  100a01:	8b 5d 08             	mov    ebx,DWORD PTR [ebp+0x8]
+  100a04:	e8 dc ff ff ff       	call   1009e5 <is_transmit_empty>
+  100a09:	85 c0                	test   eax,eax
+  100a0b:	74 f7                	je     100a04 <write_serial+0xa>
+  100a0d:	83 ec 08             	sub    esp,0x8
+  100a10:	0f b6 db             	movzx  ebx,bl
+  100a13:	53                   	push   ebx
+  100a14:	68 f8 03 00 00       	push   0x3f8
+  100a19:	e8 5b f6 ff ff       	call   100079 <outb>
+  100a1e:	83 c4 10             	add    esp,0x10
+  100a21:	8b 5d fc             	mov    ebx,DWORD PTR [ebp-0x4]
+  100a24:	c9                   	leave
+  100a25:	c3                   	ret
+
+00100a26 <putc_serial>:
+  100a26:	55                   	push   ebp
+  100a27:	89 e5                	mov    ebp,esp
+  100a29:	83 ec 14             	sub    esp,0x14
+  100a2c:	0f be 45 08          	movsx  eax,BYTE PTR [ebp+0x8]
+  100a30:	50                   	push   eax
+  100a31:	e8 c4 ff ff ff       	call   1009fa <write_serial>
+  100a36:	83 c4 10             	add    esp,0x10
+  100a39:	c9                   	leave
+  100a3a:	c3                   	ret
+
+00100a3b <puts_serial>:
+  100a3b:	55                   	push   ebp
+  100a3c:	89 e5                	mov    ebp,esp
+  100a3e:	53                   	push   ebx
+  100a3f:	83 ec 04             	sub    esp,0x4
+  100a42:	8b 5d 08             	mov    ebx,DWORD PTR [ebp+0x8]
+  100a45:	8a 03                	mov    al,BYTE PTR [ebx]
+  100a47:	84 c0                	test   al,al
+  100a49:	74 18                	je     100a63 <puts_serial+0x28>
+  100a4b:	43                   	inc    ebx
+  100a4c:	83 ec 0c             	sub    esp,0xc
+  100a4f:	0f be c0             	movsx  eax,al
+  100a52:	50                   	push   eax
+  100a53:	e8 a2 ff ff ff       	call   1009fa <write_serial>
+  100a58:	43                   	inc    ebx
+  100a59:	8a 43 ff             	mov    al,BYTE PTR [ebx-0x1]
+  100a5c:	83 c4 10             	add    esp,0x10
+  100a5f:	84 c0                	test   al,al
+  100a61:	75 e9                	jne    100a4c <puts_serial+0x11>
+  100a63:	8b 5d fc             	mov    ebx,DWORD PTR [ebp-0x4]
+  100a66:	c9                   	leave
+  100a67:	c3                   	ret
+
+00100a68 <_data_seg>:
+  100a68:	10 00 00 00                                         ....
+
+00100a6c <_code_seg>:
+  100a6c:	08 00 00 00 66 90 66 90 66 90 66 90 66 90 66 90     ....f.f.f.f.f.f.
+  100a7c:	66 90 66 90                                         f.f.
+
+00100a80 <font_map>:
+	...
+  100c90:	00 00 60 f0 f0 f0 60 60 60 00 60 60 00 00 00 00     ..`...```.``....
+  100ca0:	00 cc cc cc 48 00 00 00 00 00 00 00 00 00 00 00     ....H...........
+  100cb0:	00 00 00 6c 6c fe 6c 6c 6c fe 6c 6c 00 00 00 00     ...ll.lll.ll....
+  100cc0:	18 18 7c c6 c2 c0 7c 06 06 86 c6 7c 18 18 00 00     ..|...|....|....
+  100cd0:	00 00 00 00 c2 c6 0c 18 30 60 c6 86 00 00 00 00     ........0`......
+  100ce0:	00 00 38 6c 6c 38 76 dc cc cc cc 76 00 00 00 00     ..8ll8v....v....
+  100cf0:	00 60 60 60 c0 00 00 00 00 00 00 00 00 00 00 00     .```............
+  100d00:	00 00 30 60 c0 c0 c0 c0 c0 c0 60 30 00 00 00 00     ..0`......`0....
+  100d10:	00 00 c0 60 30 30 30 30 30 30 60 c0 00 00 00 00     ...`000000`.....
+  100d20:	00 00 00 00 00 66 3c ff 3c 66 00 00 00 00 00 00     .....f<.<f......
+  100d30:	00 00 00 00 00 30 30 fc 30 30 00 00 00 00 00 00     .....00.00......
+	...
+  100d48:	00 60 60 60 c0 00 00 00 00 00 00 00 00 00 00 fe     .```............
+	...
+  100d68:	00 00 c0 c0 00 00 00 00 00 00 00 00 02 06 0c 18     ................
+  100d78:	30 60 c0 80 00 00 00 00 00 00 3c 66 c3 c3 db db     0`........<f....
+  100d88:	c3 c3 66 3c 00 00 00 00 00 00 30 70 f0 30 30 30     ..f<......0p.000
+  100d98:	30 30 30 fc 00 00 00 00 00 00 7c c6 06 0c 18 30     000.......|....0
+  100da8:	60 c0 c6 fe 00 00 00 00 00 00 7c c6 06 06 3c 06     `.........|...<.
+  100db8:	06 06 c6 7c 00 00 00 00 00 00 0c 1c 3c 6c cc fe     ...|........<l..
+  100dc8:	0c 0c 0c 1e 00 00 00 00 00 00 fe c0 c0 c0 fc 06     ................
+  100dd8:	06 06 c6 7c 00 00 00 00 00 00 38 60 c0 c0 fc c6     ...|......8`....
+  100de8:	c6 c6 c6 7c 00 00 00 00 00 00 fe c6 06 06 0c 18     ...|............
+  100df8:	30 30 30 30 00 00 00 00 00 00 7c c6 c6 c6 7c c6     0000......|...|.
+  100e08:	c6 c6 c6 7c 00 00 00 00 00 00 7c c6 c6 c6 7e 06     ...|......|...~.
+  100e18:	06 06 0c 78 00 00 00 00 00 00 00 00 c0 c0 00 00     ...x............
+  100e28:	00 c0 c0 00 00 00 00 00 00 00 00 00 60 60 00 00     ............``..
+  100e38:	00 60 60 c0 00 00 00 00 00 00 00 0c 18 30 60 c0     .``..........0`.
+  100e48:	60 30 18 0c 00 00 00 00 00 00 00 00 00 fc 00 00     `0..............
+  100e58:	fc 00 00 00 00 00 00 00 00 00 00 c0 60 30 18 0c     ............`0..
+  100e68:	18 30 60 c0 00 00 00 00 00 00 7c c6 c6 0c 18 18     .0`.......|.....
+  100e78:	18 00 18 18 00 00 00 00 00 00 00 7c c6 c6 de de     ...........|....
+  100e88:	de dc c0 7c 00 00 00 00 00 00 10 38 6c c6 c6 fe     ...|.......8l...
+  100e98:	c6 c6 c6 c6 00 00 00 00 00 00 fc 66 66 66 7c 66     ...........fff|f
+  100ea8:	66 66 66 fc 00 00 00 00 00 00 3c 66 c2 c0 c0 c0     fff.......<f....
+  100eb8:	c0 c2 66 3c 00 00 00 00 00 00 f8 6c 66 66 66 66     ..f<.......lffff
+  100ec8:	66 66 6c f8 00 00 00 00 00 00 fe 66 62 68 78 68     ffl........fbhxh
+  100ed8:	60 62 66 fe 00 00 00 00 00 00 fe 66 62 68 78 68     `bf........fbhxh
+  100ee8:	60 60 60 f0 00 00 00 00 00 00 3c 66 c2 c0 c0 de     ```.......<f....
+  100ef8:	c6 c6 66 3a 00 00 00 00 00 00 c6 c6 c6 c6 fe c6     ..f:............
+  100f08:	c6 c6 c6 c6 00 00 00 00 00 00 f0 60 60 60 60 60     ...........`````
+  100f18:	60 60 60 f0 00 00 00 00 00 00 1e 0c 0c 0c 0c 0c     ```.............
+  100f28:	cc cc cc 78 00 00 00 00 00 00 e6 66 66 6c 78 78     ...x.......fflxx
+  100f38:	6c 66 66 e6 00 00 00 00 00 00 f0 60 60 60 60 60     lff........`````
+  100f48:	60 62 66 fe 00 00 00 00 00 00 c3 e7 ff ff db c3     `bf.............
+  100f58:	c3 c3 c3 c3 00 00 00 00 00 00 c6 e6 f6 fe de ce     ................
+  100f68:	c6 c6 c6 c6 00 00 00 00 00 00 7c c6 c6 c6 c6 c6     ..........|.....
+  100f78:	c6 c6 c6 7c 00 00 00 00 00 00 fc 66 66 66 7c 60     ...|.......fff|`
+  100f88:	60 60 60 f0 00 00 00 00 00 00 7c c6 c6 c6 c6 c6     ```.......|.....
+  100f98:	c6 d6 de 7c 0c 0e 00 00 00 00 fc 66 66 66 7c 6c     ...|.......fff|l
+  100fa8:	66 66 66 e6 00 00 00 00 00 00 7c c6 c6 60 38 0c     fff.......|..`8.
+  100fb8:	06 c6 c6 7c 00 00 00 00 00 00 ff db 99 18 18 18     ...|............
+  100fc8:	18 18 18 3c 00 00 00 00 00 00 c6 c6 c6 c6 c6 c6     ...<............
+  100fd8:	c6 c6 c6 7c 00 00 00 00 00 00 c3 c3 c3 c3 c3 c3     ...|............
+  100fe8:	c3 66 3c 18 00 00 00 00 00 00 c3 c3 c3 c3 c3 db     .f<.............
+  100ff8:	db ff 66 66 00 00 00 00 00 00 c3 c3 66 3c 18 18     ..ff........f<..
+  101008:	3c 66 c3 c3 00 00 00 00 00 00 c3 c3 c3 66 3c 18     <f...........f<.
+  101018:	18 18 18 3c 00 00 00 00 00 00 ff c3 86 0c 18 30     ...<...........0
+  101028:	60 c1 c3 ff 00 00 00 00 00 00 f0 c0 c0 c0 c0 c0     `...............
+  101038:	c0 c0 c0 f0 00 00 00 00 00 00 00 80 c0 e0 70 38     ..............p8
+  101048:	1c 0e 06 02 00 00 00 00 00 00 f0 30 30 30 30 30     ...........00000
+  101058:	30 30 30 f0 00 00 00 00 10 38 6c c6 00 00 00 00     000......8l.....
+	...
+  10107c:	00 ff 00 00 c0 c0 60 00 00 00 00 00 00 00 00 00     ......`.........
+	...
+  101094:	00 78 0c 7c cc cc cc 76 00 00 00 00 00 00 e0 60     .x.|...v.......`
+  1010a4:	60 78 6c 66 66 66 66 7c 00 00 00 00 00 00 00 00     `xlffff|........
+  1010b4:	00 7c c6 c0 c0 c0 c6 7c 00 00 00 00 00 00 1c 0c     .|.....|........
+  1010c4:	0c 3c 6c cc cc cc cc 76 00 00 00 00 00 00 00 00     .<l....v........
+  1010d4:	00 7c c6 fe c0 c0 c6 7c 00 00 00 00 00 00 38 6c     .|.....|......8l
+  1010e4:	64 60 f0 60 60 60 60 f0 00 00 00 00 00 00 00 00     d`.````.........
+  1010f4:	00 76 cc cc cc cc cc 7c 0c cc 78 00 00 00 e0 60     .v.....|..x....`
+  101104:	60 6c 76 66 66 66 66 e6 00 00 00 00 00 00 60 60     `lvffff.......``
+  101114:	00 e0 60 60 60 60 60 f0 00 00 00 00 00 00 0c 0c     ..`````.........
+  101124:	00 1c 0c 0c 0c 0c 0c 0c cc cc 78 00 00 00 e0 60     ..........x....`
+  101134:	60 66 6c 78 78 6c 66 e6 00 00 00 00 00 00 e0 60     `flxxlf........`
+  101144:	60 60 60 60 60 60 60 f0 00 00 00 00 00 00 00 00     ```````.........
+  101154:	00 e6 ff db db db db db 00 00 00 00 00 00 00 00     ................
+  101164:	00 dc 66 66 66 66 66 66 00 00 00 00 00 00 00 00     ..ffffff........
+  101174:	00 7c c6 c6 c6 c6 c6 7c 00 00 00 00 00 00 00 00     .|.....|........
+  101184:	00 dc 66 66 66 66 66 7c 60 60 f0 00 00 00 00 00     ..fffff|``......
+  101194:	00 76 cc cc cc cc cc 7c 0c 0c 1e 00 00 00 00 00     .v.....|........
+  1011a4:	00 dc 76 66 60 60 60 f0 00 00 00 00 00 00 00 00     ..vf```.........
+  1011b4:	00 7c c6 60 38 0c c6 7c 00 00 00 00 00 00 10 30     .|.`8..|.......0
+  1011c4:	30 fc 30 30 30 30 36 1c 00 00 00 00 00 00 00 00     0.00006.........
+  1011d4:	00 cc cc cc cc cc cc 76 00 00 00 00 00 00 00 00     .......v........
+  1011e4:	00 c3 c3 c3 c3 66 3c 18 00 00 00 00 00 00 00 00     .....f<.........
+  1011f4:	00 c3 c3 c3 db db ff 66 00 00 00 00 00 00 00 00     .......f........
+  101204:	00 c3 66 3c 18 3c 66 c3 00 00 00 00 00 00 00 00     ..f<.<f.........
+  101214:	00 c6 c6 c6 c6 c6 c6 7e 06 0c f8 00 00 00 00 00     .......~........
+  101224:	00 fe cc 18 30 60 c6 fe 00 00 00 00 00 00 1c 30     ....0`.........0
+  101234:	30 30 e0 30 30 30 30 1c 00 00 00 00 00 00 c0 c0     00.0000.........
+  101244:	c0 c0 00 c0 c0 c0 c0 c0 00 00 00 00 00 00 e0 30     ...............0
+  101254:	30 30 1c 30 30 30 30 e0 00 00 00 00 00 00 76 dc     00.0000.......v.
+	...
+  101270:	66 90 66 90 66 90 66 90 66 90 66 90 66 90 66 90     f.f.f.f.f.f.f.f.
+
+00101280 <keymap>:
+  101280:	00 1b 31 32 33 34 35 36 37 38 39 30 2d 3d 00 09     ..1234567890-=..
+  101290:	71 77 65 72 74 79 75 69 6f 70 5b 5d 0a 00 61 73     qwertyuiop[]..as
+  1012a0:	64 66 67 68 6a 6b 6c 3b 27 60 00 5c 7a 78 63 76     dfghjkl;'`.\zxcv
+  1012b0:	62 6e 6d 2c 2e 2f 00 00 00 20 00                    bnm,./... .
