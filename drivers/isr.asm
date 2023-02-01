@@ -32,6 +32,7 @@ keyboard_isr:
     test al, al             ; 
     jz .control_char        ; we've mapped control chars to 0x0
 
+    mov eax, 0x61           ; TEMP DELETE
     extern typec
     push eax                ;
     call typec              ; type character to the console

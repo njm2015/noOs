@@ -1,4 +1,4 @@
-CC=i386-elf-gcc
+CC=i686-elf-gcc
 
 INCLUDES := -I./includes
 SRC_DIRS := $(shell find . -mindepth 1 -maxdepth 2 -type d)
@@ -10,7 +10,7 @@ SRC_ASM  := $(foreach d, $(SRC_DIRS), $(wildcard $d/*.asm))
 
 OBJS     := boot/boot.o $(SRC_ASM:%.asm=%.o) $(SRC_C:%.c=%.o)
 
-CFLAGS = -O1 -c -g -ggdb -std=gnu99 -ffreestanding -Wall -Wextra $(INCLUDE_GCC)
+CFLAGS = -O2 -c -g -ggdb -std=gnu99 -ffreestanding -Wall -Wextra
 LDFLAGS = -g -ggdb -ffreestanding -nostdlib -lgcc
 
 all: clean grub/noOs.iso

@@ -13,6 +13,8 @@
 #include "console.h"
 #include "ps2.h"
 
+#include "random.h"
+
 #if defined (SERIAL)
     #define PUTC(c) putc_serial(c)
 #else
@@ -26,6 +28,8 @@
 #endif
 
 extern void* console_char_buf;
+
+extern void counter();
 
 void kernel_main(uint32_t magic_number, uint32_t mb_addr) {
 
@@ -65,6 +69,29 @@ void kernel_main(uint32_t magic_number, uint32_t mb_addr) {
 
     console_clear();
     console_sync();    
+    */
+
+    /*
+    uint32_t res;
+    for (size_t j = 0; j < 100; ++j) {
+        for (size_t i = 0; i < 100000000; ++i)
+            res = rand();
+    }
+
+    typec(0x30 + res % 10);
+    */
+
+    /*
+    for (size_t i = 0; i < 10; ++i)
+        typec(0x30 + rand() % 10);
+    */
+
+    /*
+    uint32_t cr0 = get_cr0();
+    if ((cr0 >> 30) & 1)
+        types("cache disabled");
+    else
+        types("cache enabled");
     */
 
 }
